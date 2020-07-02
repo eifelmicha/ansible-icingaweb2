@@ -15,6 +15,9 @@ _icingaweb_dependencies:
     - python-mysqldb
     - python3-mysqldb
     - mysql-client-core
+  ubuntu-20:
+    - python3-mysqldb
+    - mysql-client-core
   centos-7:
     - php73-php-mysqlnd
     - mariadb
