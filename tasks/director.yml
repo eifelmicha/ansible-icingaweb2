@@ -1,0 +1,95 @@
+---
+- name: create director modules directory
+  file:
+    path: /etc/icingaweb2/modules/director/
+    state: directory
+    owner: "{{ icingaweb_user }}"
+    group: "{{ icingaweb_group }}"
+    mode: 0770
+
+- name: create director modules configuration
+  template:
+    src: modules/director/{{ item }}.ini.j2
+    dest: /etc/icingaweb2/modules/director/{{ item }}.ini
+    owner: "{{ icingaweb_user }}"
+    group: "{{ icingaweb_group }}"
+    mode: 0770
+  loop:
+    - config
+    - kickstart
+
+# - name: check if director database exists
+#   shell: >
+#     mysql \
+#       --host={{ icinga2_director.host }} \
+#       --user={{ icinga2_director.user }} \
+#       --password={{ icinga2_director.password }} \
+#       --batch {{ icinga2_director.dbname }} \
+#       --skip-column-names \
+#       --execute \
+#       "'SHOW TABLES;' | grep director_setting | wc -l"
+#   register: dbstatus
+#   changed_when: false
+#   ignore_errors: true
+#   no_log: true
+#
+# - name: importing director database
+#   mysql_db:
+#     state: import
+#     name: "{{ icinga2_director.dbname }}"
+#     login_host: "{{ icinga2_director.host }}"
+#     login_user: "{{ icinga2_director.user }}"
+#     login_password: "{{ icinga2_director.password }}"
+#     target: "{{ icingaweb_modules_path }}/director/schema/mysql.sql"
+#   when: dbstatus.stdout == "0"
+
+- name: Flush handlers (restart icinga2 if needed)
+  meta: flush_handlers
+
+- name: add icingadirector service user
+  user:
+    name: icingadirector
+    state: present
+    shell: /bin/false
+    group: "{{ icingaweb_group }}"
+    home: "{{ icingaweb_director_home }}"
+    system: yes
+    create_home: yes
+
+- name: create icinga-director service
+  copy:
+    dest: /etc/systemd/system
+    src: "{{ icingaweb_modules_path }}/director/contrib/systemd/icinga-director.service"
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart-director
+
+- name: check if migration is pending
+  command: /usr/bin/icingacli director migration pending --verbose
+  register: pending
+  changed_when: pending.rc == 0
+  failed_when: "'ERROR' in pending.stdout"
+  tags:
+    - config
+    - install
+
+- name: run migration
+  command: /usr/bin/icingacli director migration run --verbose
+  when:
+    - pending.rc == 0
+    - "'ERROR' not in pending.stdout"
+  tags:
+    - config
+    - install
+
+- name: check if kickstart is required
+  command: /usr/bin/icingacli director kickstart required --verbose || /bin/true
+  register: kickstart
+  changed_when: "'Kickstart has been configured and should be triggered' in kickstart.stdout"
+  failed_when: "'ERROR' in kickstart.stdout"
+  notify: run-kickstart
+  tags:
+    - config
+    - install

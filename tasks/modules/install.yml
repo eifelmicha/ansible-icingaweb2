@@ -62,7 +62,7 @@
         state: directory
         owner: "{{ icingaweb_user }}"
         group: "{{ icingaweb_group }}"
-        mode: 0660
+        mode: 0770
       loop:
         "{{ icingaweb_external_modules }}"
       when: item.enabled and
@@ -76,7 +76,7 @@
         dest: /etc/icingaweb2/modules/{{ item.name }}/config.ini
         owner: "{{ icingaweb_user }}"
         group: "{{ icingaweb_group }}"
-        mode: 0660
+        mode: 0770
       loop:
         "{{ icingaweb_external_modules }}"
       when: item.enabled and
@@ -98,6 +98,24 @@
       loop:
         "{{ icingaweb_external_modules }}"
       when: item.enabled
+
+    - name: chmod finally folders
+      command: |
+        find /usr/share/icingaweb2/modules -type d -exec chmod 2770 {} \;
+      become: true
+
+    - name: chmod finally files
+      command: |
+        find /usr/share/icingaweb2/modules -type f -exec chmod 0644 {} \;
+      become: true
+
+    - name: Recursively change ownership of a directory
+      file:
+        path: /usr/share/icingaweb2/modules
+        state: directory
+        recurse: yes
+        owner: "{{ icingaweb_user }}"
+        group: "{{ icingaweb_group }}"
 
   when:
     - icingaweb_external_modules is defined

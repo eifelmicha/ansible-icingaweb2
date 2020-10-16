@@ -1,0 +1,10 @@
+---
+- name: run-kickstart
+  command: /usr/bin/icingacli director kickstart run --verbose
+
+- name: restart-director
+  systemd:
+    daemon_reload: yes
+    name: icinga-director.service
+    enabled: yes
+    state: restarted

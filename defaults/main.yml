@@ -3,6 +3,9 @@
 icingaweb_version: 2.8.2
 
 icingaweb_install_dir: /usr/share/icingaweb2
+icingaweb_modules_path: /usr/share/icingaweb2/modules
+icingaweb_director_home: /var/lib/icingadirector
+
 
 icingaweb_modules_disabled:
   - setup

@@ -98,7 +98,7 @@
     dest: /etc/icingaweb2/modules/monitoring/{{ item }}.ini
     owner: "{{ icingaweb_user }}"
     group: "{{ icingaweb_group }}"
-    mode: 0666
+    mode: 0777
   loop:
     - config
     - backends

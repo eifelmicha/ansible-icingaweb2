@@ -20,3 +20,8 @@
 
 - name: external modules
   include_tasks: modules/install.yml
+
+- include: director.yml
+  become: true
+  tags:
+    - configure
