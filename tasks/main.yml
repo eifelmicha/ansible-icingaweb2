@@ -10,6 +10,12 @@
   tags:
     - installation
 
+- include: icingadb.yml
+  when: icingadb | bool | default('false')
+  become: true
+  tags:
+    - installation
+
 - include: configure.yml
   become: true
   tags:

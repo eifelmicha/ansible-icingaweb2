@@ -1,6 +1,7 @@
 ---
 
 icingaweb_version: 2.8.2
+icingadb: true
 
 icingaweb_install_dir: /usr/share/icingaweb2
 icingaweb_modules_path: /usr/share/icingaweb2/modules
@@ -9,6 +10,7 @@ icingaweb_director_home: /var/lib/icingadirector
 
 icingaweb_modules_disabled:
   - setup
+  - monitoring
 
 icingaweb_modules_enabled: []
 #  - monitoring
@@ -57,6 +59,16 @@ icingaweb_resources:
       # password: "{{ icingaweb_auth_dba_password }}"
       prefix: icingaweb_
       charset: utf8
+    icingadb:
+      type: db
+      db: mysql
+      host: 127.0.0.1
+      port: 3306
+      # dbname: "{{ icingaweb_auth_dba_database }}"
+      # username: "{{ icingaweb_auth_dba_username }}"
+      # password: "{{ icingaweb_auth_dba_password }}"
+      prefix: icingadb_
+      charset: utf8
   ldap: {}
   ssh: {}
 
@@ -95,3 +107,11 @@ icingaweb_module:
       protected_customvars:
         - '*http_auth_pair*'
         - '*password*'
+
+icingaweb_icingadb:
+  icingadb:
+    resource: "{{ icingaweb_resources.db.icingadb }}"
+  redis1:
+    host: "127.0.0.1"
+  # redis2:
+  #   host: "{{ icingadb_redis.host }}"

@@ -1,0 +1,36 @@
+; {{ ansible_managed }}
+{% if item.configuration is defined and item.configuration | count != 0 %}
+{% set icingadb = item.configuration %}
+{% set _attr = ['icingadb','redis1',redis2] %}
+
+{% if icingadb.icingadb is defined and icingadb.icingadb | count != 0 %}
+{% set _attr = ['resource'] %}
+[icingadb]
+{% for k, v in icingadb.icingadb.items() %}
+{% if k in _attr %}
+{{ k }} = "{{ v }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if icingadb.redis1 is defined and icingadb.redis1 | count != 0 %}
+{% set _attr = ['host'] %}
+[redis1]
+{% for k, v in icingadb.redis1.items() %}
+{% if k in _attr %}
+{{ k }} = "{{ v }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if icingadb.redis2 is defined and icingadb.redis2 | count != 0 %}
+{% set _attr = ['host'] %}
+[redis2]
+{% for k, v in icingadb.redis2.items() %}
+{% if k in _attr %}
+{{ k }} = "{{ v }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endif %}

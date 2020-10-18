@@ -85,6 +85,26 @@ icingaweb_resources_defaults:
       password: icinga2_ido
       charset: utf8
 
+    director:
+      type: db
+      db: mysql
+      host: 127.0.0.1
+      port: 3306
+      dbname: director
+      username: director
+      password: director
+      charset: utf8
+
+    icingadb:
+      type: db
+      db: mysql
+      host: 127.0.0.1
+      port: 3306
+      dbname: icingadb
+      username: icingadb
+      password: icingadb
+      charset: utf8
+
 _icingaweb_user:
   default: www-data
   redhat: nginx

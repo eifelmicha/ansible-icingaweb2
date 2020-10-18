@@ -1,0 +1,9 @@
+---
+
+- name: Debian - Install IcingaDB packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php-redis
+  when: ansible_os_family | lower == 'debian'
